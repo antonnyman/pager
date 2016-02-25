@@ -1,10 +1,12 @@
 var gulp = require('gulp'),
+    gulputil = require('gulp-util'),
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     concat = require('gulp-concat'),
     cssnano =  require('gulp-cssnano');
     rename = require('gulp-rename'),
-    uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify'),
+    markdown = require('gulp-markdown-to-json');
 
 var port = 35729;
 
@@ -34,7 +36,7 @@ function reloadPage(event) {
 }
 
 gulp.task('styles', function() {
-  return gulp.src('sass/*.scss')
+  return gulp.src('sass/style.scss')
   .pipe(rename({ suffix: '.min' }))
   .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
   .pipe(gulp.dest('dist'));
@@ -58,16 +60,28 @@ gulp.task('json', function() {
   .pipe(gulp.dest('dist'))
 });
 
+gulp.task('markdown', function() {
+  return gulp.src('content/**/*.md')
+  .pipe(gulputil.buffer())
+  .pipe(markdown({
+        pedantic: true,
+        smartypants: true
+  }))
+  .pipe(gulp.dest('dist'))
+});
+
 gulp.task('watch', function() {
-  gulp.watch('sass/*.sass', ['styles']);
+  gulp.watch('sass/*.scss', ['styles']);
   gulp.watch('js/*.js', ['js']);
   gulp.watch('html/*.html', ['html']);
   gulp.watch('json/*.json', ['json']);
+  gulp.watch('content/**/*.md', ['markdown']);
 
   gulp.watch('dist/*.css', reloadPage);
   gulp.watch('dist/*.js', reloadPage);
   gulp.watch('dist/*.html', reloadPage);
   gulp.watch('dist/*.json', reloadPage);
+  gulp.watch('dist/**/*.md', reloadPage);
 
 });
 
@@ -77,6 +91,7 @@ gulp.task('default', ['express',
                       'js',
                       'html',
                       'json',
+                      'markdown',
                       'watch'], function() {
 
 });

@@ -1,11 +1,10 @@
-.blue {
-  color: blue;
+@import 'animation';
+
+#content {
+  animation: fadein 1s ease;
 }
 
-.red {
-  color: red;
-}
-
-.green {
-  color: green;
+.enter {
+  animation-name: fadein, enterup;
+  animation-duration: 1s, 1s;
 }
